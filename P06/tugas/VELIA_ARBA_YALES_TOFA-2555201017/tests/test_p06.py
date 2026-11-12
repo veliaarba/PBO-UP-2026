@@ -145,3 +145,121 @@ def test_alat_tani_hash_sama_untuk_kode_sama() -> None:
     alat1 = AlatTani("A08", "Cangkul", 50_000)
     alat2 = AlatTani("A08", "Cangkul Baru", 60_000)
     assert hash(alat1) == hash(alat2)
+
+# ==================================================
+# PENGUJIAN TAMBAHAN UNTUK MEMENUHI TARGET PRAKTIKUM
+# ==================================================
+
+def test_alat_tani_kode_kosong() -> None:
+    with pytest.raises(ValueError):
+        AlatTani("", "Cangkul", 50_000)
+
+
+def test_alat_tani_nama_hanya_spasi() -> None:
+    with pytest.raises(ValueError):
+        AlatTani("A09", "   ", 50_000)
+
+
+def test_alat_tani_tarif_negatif() -> None:
+    with pytest.raises(ValueError):
+        AlatTani("A10", "Cangkul", -10_000)
+
+
+def test_alat_tani_setter_tarif_valid() -> None:
+    alat = AlatTani("A11", "Cangkul", 50_000)
+    alat.tarif_harian = 75_000
+    assert alat.tarif_harian == 75_000
+
+
+def test_alat_tani_setter_tarif_nol() -> None:
+    alat = AlatTani("A12", "Cangkul", 50_000)
+    with pytest.raises(ValueError):
+        alat.tarif_harian = 0
+
+
+def test_alat_tani_alias_tarif() -> None:
+    alat = AlatTani("A13", "Cangkul", 50_000)
+    assert alat.tarif == 50_000
+
+
+def test_alat_tani_setter_alias_tarif() -> None:
+    alat = AlatTani("A14", "Cangkul", 50_000)
+    alat.tarif = 100_000
+    assert alat.tarif_harian == 100_000
+
+
+def test_alat_tani_jumlah_terdaftar_bertambah() -> None:
+    sebelum = AlatTani.jumlah_terdaftar()
+    AlatTani("A15", "Cangkul", 50_000)
+    sesudah = AlatTani.jumlah_terdaftar()
+    assert sesudah == sebelum + 1
+
+
+def test_alat_tani_format_rupiah() -> None:
+    assert AlatTani.format_rupiah(1_234_567) == "Rp 1.234.567"
+
+
+def test_alat_tani_keterangan() -> None:
+    alat = AlatTani("A16", "Cangkul", 50_000)
+    assert alat.keterangan() == "[A16] Cangkul"
+
+
+def test_alat_tani_biaya_sewa_satu_hari() -> None:
+    alat = AlatTani("A17", "Cangkul", 50_000)
+    assert alat.biaya_sewa(1) == 50_000
+
+
+def test_alat_tani_biaya_sewa_nol_hari() -> None:
+    alat = AlatTani("A18", "Cangkul", 50_000)
+    with pytest.raises(ValueError):
+        alat.biaya_sewa(0)
+
+
+def test_alat_tani_biaya_sewa_hari_negatif() -> None:
+    alat = AlatTani("A19", "Cangkul", 50_000)
+    with pytest.raises(ValueError):
+        alat.biaya_sewa(-2)
+
+
+def test_alat_tani_set_menghapus_objek_dengan_kode_sama() -> None:
+    alat1 = AlatTani("A20", "Cangkul", 50_000)
+    alat2 = AlatTani("A20", "Cangkul Besar", 75_000)
+    kumpulan = {alat1, alat2}
+    assert len(kumpulan) == 1
+
+
+def test_traktor_biaya_sewa_satu_hari() -> None:
+    traktor = Traktor("TR-06", "Kubota", 150_000, 8)
+    assert traktor.biaya_sewa(1) == 250_000
+
+
+def test_traktor_csv_menolak_kolom_berlebih() -> None:
+    with pytest.raises(ValueError):
+        Traktor.from_baris_csv("TR-07, Kubota, 200000, 8, ekstra")
+
+
+def test_pompa_air_csv_menolak_data_angka_salah() -> None:
+    with pytest.raises(ValueError):
+        PompaAir.from_baris_csv("PA-06, Pompa Air, abc, 100")
+
+
+def test_pompa_air_konsumsi_solar_di_bawah_seratus() -> None:
+    pompa = PompaAir("PA-07", "Pompa Air", 75_000, 99)
+    assert pompa.konsumsi_solar_harian() == 2
+
+
+def test_pompa_air_biaya_sewa_satu_hari() -> None:
+    pompa = PompaAir("PA-08", "Pompa Air", 75_000, 100)
+    assert pompa.biaya_sewa(1) == 96_000
+
+
+def test_perontok_menolak_nol_hari() -> None:
+    perontok = Perontok("PR-06", "Perontok Padi", 200_000, 500)
+    with pytest.raises(ValueError):
+        perontok.hari_ditagih(0)
+
+
+def test_perontok_csv_menolak_data_angka_salah() -> None:
+    with pytest.raises(ValueError):
+        Perontok.from_baris_csv("PR-07, Perontok Padi, abc, 500")
+

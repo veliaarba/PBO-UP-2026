@@ -25,7 +25,5 @@ class PegawaiPenyuluh(Pegawai):
         return self._jumlah_kegiatan
 
     def hitung_penghasilan(self, tambahan: int = 0) -> int:
-        if tambahan < 0:
-            raise ValueError("Tambahan penghasilan tidak boleh negatif")
         honor = self._jumlah_kegiatan * self.HONOR_PER_KEGIATAN
-        return self.gaji_pokok + honor + tambahan
+        return super().hitung_penghasilan(tambahan) + honor
